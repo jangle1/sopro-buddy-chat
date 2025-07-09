@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Send, Bot, User, Sparkles } from "lucide-react";
+import { Send, Bot, User, Sparkles, MessageCircle } from "lucide-react";
 import ChatMessage from "@/components/ChatMessage";
 import SuggestionCard from "@/components/SuggestionCard";
 import { toast } from "sonner";
