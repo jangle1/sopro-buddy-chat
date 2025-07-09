@@ -107,123 +107,134 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Header />
       
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="p-3 bg-primary rounded-full">
-              <Bot className="h-8 w-8 text-white" />
+      <div className="flex-1 flex flex-col">
+        {/* Mobile-first layout */}
+        <div className="flex-1 flex flex-col lg:flex-row max-w-7xl mx-auto w-full">
+          {/* Chat Interface - Full width on mobile, 2/3 on desktop */}
+          <div className="flex-1 lg:flex-[2] flex flex-col min-h-0">
+            {/* Header section - smaller on mobile */}
+            <div className="text-center p-4 lg:p-8">
+              <div className="flex items-center justify-center gap-2 lg:gap-3 mb-2 lg:mb-4">
+                <div className="p-2 lg:p-3 bg-primary rounded-full">
+                  <Bot className="h-6 w-6 lg:h-8 lg:w-8 text-white" />
+                </div>
+                <h1 className="text-2xl lg:text-4xl font-bold text-foreground">Asystent Sopro</h1>
+              </div>
+              <p className="text-sm lg:text-lg text-muted-foreground max-w-2xl mx-auto px-2">
+                Uzyskaj natychmiastowe odpowiedzi na pytania dotyczące produktów Sopro. Zapytaj mnie o nasze rozwiązania, zastosowania lub procesy budowlane.
+              </p>
             </div>
-            <h1 className="text-4xl font-bold text-foreground">Asystent Sopro</h1>
-          </div>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Uzyskaj natychmiastowe odpowiedzi na pytania dotyczące produktów Sopro. Zapytaj mnie o nasze rozwiązania, zastosowania lub procesy budowlane.
-          </p>
-        </div>
 
-        <div className="grid lg:grid-cols-3 gap-6">
-          {/* Chat Interface */}
-          <div className="lg:col-span-2">
-            <Card className="h-[600px] flex flex-col shadow-lg">
-              <CardHeader className="bg-primary text-white rounded-t-lg">
-                <CardTitle className="flex items-center gap-2">
-                  <MessageCircle className="h-5 w-5" />
-                  Rozmowa z Asystentem Sopro
-                </CardTitle>
-              </CardHeader>
-              
-              <CardContent className="flex-1 flex flex-col p-0">
-                <ScrollArea className="flex-1 p-4">
-                  {messages.length === 0 && (
-                    <div className="flex flex-col items-center justify-center h-full text-center">
-                      <Sparkles className="h-12 w-12 text-primary mb-4" />
-                      <h3 className="text-lg font-semibold mb-2">Witaj w Asystenice Sopro!</h3>
-                      <p className="text-muted-foreground mb-4">
-                        Zacznij od zadania pytania lub wybierz jedną z propozycji po prawej stronie.
-                      </p>
-                    </div>
-                  )}
+            {/* Chat Card - takes remaining space */}
+            <div className="flex-1 mx-4 lg:mx-8 mb-4 lg:mb-8 flex flex-col min-h-0">
+              <Card className="flex-1 flex flex-col shadow-lg min-h-0">
+                <CardHeader className="bg-primary text-white rounded-t-lg py-3 lg:py-6 flex-shrink-0">
+                  <CardTitle className="flex items-center gap-2 text-lg lg:text-xl">
+                    <MessageCircle className="h-4 w-4 lg:h-5 lg:w-5" />
+                    Rozmowa z Asystentem Sopro
+                  </CardTitle>
+                </CardHeader>
+                
+                <CardContent className="flex-1 flex flex-col p-0 min-h-0">
+                  {/* Messages area - scrollable */}
+                  <div className="flex-1 min-h-0">
+                    <ScrollArea className="h-full">
+                      <div className="p-3 lg:p-4 space-y-3 lg:space-y-4">
+                        {messages.length === 0 && (
+                          <div className="flex flex-col items-center justify-center h-32 lg:h-48 text-center">
+                            <Sparkles className="h-8 w-8 lg:h-12 lg:w-12 text-primary mb-2 lg:mb-4" />
+                            <h3 className="text-base lg:text-lg font-semibold mb-1 lg:mb-2">Witaj w Asystenice Sopro!</h3>
+                            <p className="text-sm lg:text-base text-muted-foreground px-4">
+                              Zacznij od zadania pytania lub wybierz jedną z propozycji.
+                            </p>
+                          </div>
+                        )}
+                        
+                        {messages.map((message) => (
+                          <ChatMessage
+                            key={message.id}
+                            message={message.text}
+                            isUser={message.isUser}
+                            timestamp={message.timestamp}
+                          />
+                        ))}
+                        
+                        {isLoading && (
+                          <div className="flex justify-start">
+                            <div className="bg-muted rounded-lg px-3 lg:px-4 py-2 lg:py-3 mr-2 lg:mr-4">
+                              <div className="flex items-center gap-2">
+                                <Bot className="h-3 w-3 lg:h-4 lg:w-4 text-primary" />
+                                <div className="flex gap-1">
+                                  <div className="w-1.5 h-1.5 lg:w-2 lg:h-2 bg-primary rounded-full animate-bounce"></div>
+                                  <div className="w-1.5 h-1.5 lg:w-2 lg:h-2 bg-primary rounded-full animate-bounce [animation-delay:0.1s]"></div>
+                                  <div className="w-1.5 h-1.5 lg:w-2 lg:h-2 bg-primary rounded-full animate-bounce [animation-delay:0.2s]"></div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                        
+                        <div ref={messagesEndRef} />
+                      </div>
+                    </ScrollArea>
+                  </div>
                   
-                  {messages.map((message) => (
-                    <ChatMessage
-                      key={message.id}
-                      message={message.text}
-                      isUser={message.isUser}
-                      timestamp={message.timestamp}
+                  {/* Input Area - fixed at bottom */}
+                  <div className="border-t p-3 lg:p-4 flex-shrink-0">
+                    <div className="flex gap-2">
+                      <Input
+                        ref={inputRef}
+                        value={inputValue}
+                        onChange={(e) => setInputValue(e.target.value)}
+                        onKeyPress={handleKeyPress}
+                        placeholder="Zapytaj mnie o produkty Sopro..."
+                        disabled={isLoading}
+                        className="flex-1 text-sm lg:text-base"
+                      />
+                      <Button 
+                        onClick={() => handleSendMessage()}
+                        disabled={!inputValue.trim() || isLoading}
+                        size="icon"
+                        className="shrink-0 h-9 w-9 lg:h-10 lg:w-10"
+                      >
+                        <Send className="h-3 w-3 lg:h-4 lg:w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+
+          {/* Suggestions Panel - Below chat on mobile, side on desktop */}
+          <div className="lg:flex-1 lg:max-w-sm">
+            <div className="mx-4 lg:mx-0 lg:mr-8 mb-4 lg:mb-8 lg:mt-24">
+              <Card className="shadow-lg">
+                <CardHeader className="pb-3 lg:pb-6">
+                  <CardTitle className="flex items-center gap-2 text-foreground text-base lg:text-lg">
+                    <User className="h-4 w-4 lg:h-5 lg:w-5" />
+                    Sugerowane pytania
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2 lg:space-y-3">
+                  {suggestedQuestions.map((question, index) => (
+                    <SuggestionCard
+                      key={index}
+                      question={question}
+                      onClick={handleSuggestionClick}
                     />
                   ))}
-                  
-                  {isLoading && (
-                    <div className="flex justify-start mb-4">
-                      <div className="bg-muted rounded-lg px-4 py-3 mr-4">
-                        <div className="flex items-center gap-2">
-                          <Bot className="h-4 w-4 text-primary" />
-                          <div className="flex gap-1">
-                            <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
-                            <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:0.1s]"></div>
-                            <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:0.2s]"></div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  
-                  <div ref={messagesEndRef} />
-                </ScrollArea>
-                
-                {/* Input Area */}
-                <div className="border-t p-4">
-                  <div className="flex gap-2">
-                    <Input
-                      ref={inputRef}
-                      value={inputValue}
-                      onChange={(e) => setInputValue(e.target.value)}
-                      onKeyPress={handleKeyPress}
-                      placeholder="Zapytaj mnie o produkty Sopro..."
-                      disabled={isLoading}
-                      className="flex-1"
-                    />
-                    <Button 
-                      onClick={() => handleSendMessage()}
-                      disabled={!inputValue.trim() || isLoading}
-                      size="icon"
-                      className="shrink-0"
-                    >
-                      <Send className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Suggestions Panel */}
-          <div className="lg:col-span-1">
-            <Card className="shadow-lg">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-foreground">
-                  <User className="h-5 w-5" />
-                  Sugerowane pytania
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {suggestedQuestions.map((question, index) => (
-                  <SuggestionCard
-                    key={index}
-                    question={question}
-                    onClick={handleSuggestionClick}
-                  />
-                ))}
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="text-center mt-8 text-sm text-muted-foreground">
+        <div className="text-center py-4 text-xs lg:text-sm text-muted-foreground bg-muted/30">
           <p>Napędzane przez Asystenta AI Sopro • Więcej informacji na sopro.pl</p>
         </div>
       </div>
