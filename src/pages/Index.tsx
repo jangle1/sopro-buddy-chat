@@ -7,6 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Send, Bot, User, Sparkles, MessageCircle } from "lucide-react";
 import ChatMessage from "@/components/ChatMessage";
 import SuggestionCard from "@/components/SuggestionCard";
+import Header from "@/components/Header";
 import { toast } from "sonner";
 
 interface Message {
@@ -17,12 +18,12 @@ interface Message {
 }
 
 const suggestedQuestions = [
-  "What services does Sopro offer for lead generation?",
-  "How does Sopro's B2B prospecting process work?",
-  "What makes Sopro different from other lead generation companies?",
-  "Can you tell me about Sopro's pricing plans?",
-  "How quickly can I expect to see results with Sopro?",
-  "What industries does Sopro specialize in?"
+  "Jakie produkty oferuje Sopro do hydroizolacji?",
+  "Jak działa klej do płytek S-FLEX?",
+  "Jakie są różnice między produktami Sopro a konkurencją?",
+  "Gdzie mogę kupić produkty Sopro?",
+  "Jak szybko schnie zaprawa Sopro?",
+  "Jakie są zastosowania produktów Sopro w budownictwie?"
 ];
 
 const Index = () => {
@@ -47,18 +48,18 @@ const Index = () => {
     // Simple response simulation based on keywords
     const lowerMessage = userMessage.toLowerCase();
     
-    if (lowerMessage.includes("service") || lowerMessage.includes("offer")) {
-      return "Sopro specializes in B2B lead generation and prospecting services. We help businesses identify, engage, and convert high-quality prospects through our proven outbound sales development process. Our services include prospect research, personalized outreach campaigns, and qualified lead delivery.";
-    } else if (lowerMessage.includes("pricing") || lowerMessage.includes("cost")) {
-      return "Sopro offers flexible pricing plans tailored to your business needs. Our pricing is based on the scope of your campaign and the number of prospects you want to reach. I'd recommend speaking with our sales team to get a customized quote that fits your specific requirements and budget.";
-    } else if (lowerMessage.includes("process") || lowerMessage.includes("work")) {
-      return "Our B2B prospecting process follows a proven 4-step approach: 1) Research and identify your ideal prospects, 2) Craft personalized outreach messages, 3) Execute multi-touch campaigns across email and LinkedIn, 4) Deliver qualified leads directly to your sales team. We handle the entire process so you can focus on closing deals.";
-    } else if (lowerMessage.includes("result") || lowerMessage.includes("quickly")) {
-      return "Most clients start seeing qualified leads within 4-6 weeks of campaign launch. However, results can vary based on your industry, target market, and campaign parameters. We work closely with you to optimize performance and ensure you're getting the best possible results from your investment.";
-    } else if (lowerMessage.includes("different") || lowerMessage.includes("unique")) {
-      return "What sets Sopro apart is our human-first approach combined with cutting-edge technology. Unlike automated tools, our expert team crafts personalized messages for each prospect. We also provide full transparency with detailed reporting and work as an extension of your sales team.";
+    if (lowerMessage.includes("hydroizolacja") || lowerMessage.includes("izolacja")) {
+      return "Sopro oferuje kompleksowy system produktów do hydroizolacji, w tym membrany, dyspersje i systemy uszczelniające. Nasze produkty zapewniają skuteczną ochronę przed wilgocią w łazienkach, balkonach i innych obszarach narażonych na działanie wody.";
+    } else if (lowerMessage.includes("s-flex") || lowerMessage.includes("klej")) {
+      return "S-FLEX to elastyczny klej do płytek ceramicznych i kamienia naturalnego. Charakteryzuje się wysoką przyczepnością, elastycznością i odpornością na warunki atmosferyczne. Idealny do zastosowań wewnętrznych i zewnętrznych.";
+    } else if (lowerMessage.includes("różnice") || lowerMessage.includes("konkurencja")) {
+      return "Produkty Sopro wyróżniają się najwyższą jakością, innowacyjnymi formułami i wieloletnim doświadczeniem w branży chemii budowlanej. Oferujemy kompleksowe systemy produktów z pełnym wsparciem technicznym.";
+    } else if (lowerMessage.includes("kupić") || lowerMessage.includes("gdzie")) {
+      return "Produkty Sopro są dostępne w hurtowniach budowlanych, sklepach ze specjalistycznym asortymentem budowlanym oraz u autoryzowanych dystrybutorów. Sprawdź mapę punktów sprzedaży na naszej stronie internetowej.";
+    } else if (lowerMessage.includes("schnie") || lowerMessage.includes("czas")) {
+      return "Czas schnięcia zależy od konkretnego produktu. Większość zapraw Sopro osiąga wstępną wytrzymałość w ciągu 2-4 godzin, a pełne utwardzenie następuje po 24-48 godzinach, w zależności od warunków atmosferycznych.";
     } else {
-      return "Thank you for your question! I'm here to help you learn more about Sopro's lead generation services. Our team specializes in helping businesses like yours generate high-quality B2B leads through personalized outreach campaigns. Would you like to know more about our services, pricing, or process?";
+      return "Dziękuję za pytanie! Jestem tutaj, aby pomóc Ci dowiedzieć się więcej o produktach Sopro do chemii budowlanej. Nasze produkty obejmują kleje, zaprawy, hydroizolacje i systemy wykończeniowe. W czym mogę Ci pomóc?";
     }
   };
 
@@ -88,7 +89,7 @@ const Index = () => {
 
       setMessages(prev => [...prev, aiMessage]);
     } catch (error) {
-      toast.error("Sorry, I'm having trouble responding right now. Please try again.");
+      toast.error("Przepraszam, mam problem z odpowiedzią. Spróbuj ponownie.");
     } finally {
       setIsLoading(false);
     }
@@ -106,7 +107,9 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white">
+    <div className="min-h-screen bg-background">
+      <Header />
+      
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Header */}
         <div className="text-center mb-8">
@@ -114,10 +117,10 @@ const Index = () => {
             <div className="p-3 bg-primary rounded-full">
               <Bot className="h-8 w-8 text-white" />
             </div>
-            <h1 className="text-4xl font-bold text-primary">Sopro Assistant</h1>
+            <h1 className="text-4xl font-bold text-foreground">Asystent Sopro</h1>
           </div>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Get instant answers about Sopro's lead generation services. Ask me anything about our process, pricing, or how we can help grow your business.
+            Uzyskaj natychmiastowe odpowiedzi na pytania dotyczące produktów Sopro. Zapytaj mnie o nasze rozwiązania, zastosowania lub procesy budowlane.
           </p>
         </div>
 
@@ -128,7 +131,7 @@ const Index = () => {
               <CardHeader className="bg-primary text-white rounded-t-lg">
                 <CardTitle className="flex items-center gap-2">
                   <MessageCircle className="h-5 w-5" />
-                  Chat with Sopro Assistant
+                  Rozmowa z Asystentem Sopro
                 </CardTitle>
               </CardHeader>
               
@@ -137,9 +140,9 @@ const Index = () => {
                   {messages.length === 0 && (
                     <div className="flex flex-col items-center justify-center h-full text-center">
                       <Sparkles className="h-12 w-12 text-primary mb-4" />
-                      <h3 className="text-lg font-semibold mb-2">Welcome to Sopro Assistant!</h3>
+                      <h3 className="text-lg font-semibold mb-2">Witaj w Asystenice Sopro!</h3>
                       <p className="text-muted-foreground mb-4">
-                        Start by asking a question or choosing from the suggestions on the right.
+                        Zacznij od zadania pytania lub wybierz jedną z propozycji po prawej stronie.
                       </p>
                     </div>
                   )}
@@ -179,7 +182,7 @@ const Index = () => {
                       value={inputValue}
                       onChange={(e) => setInputValue(e.target.value)}
                       onKeyPress={handleKeyPress}
-                      placeholder="Ask me anything about Sopro's services..."
+                      placeholder="Zapytaj mnie o produkty Sopro..."
                       disabled={isLoading}
                       className="flex-1"
                     />
@@ -201,9 +204,9 @@ const Index = () => {
           <div className="lg:col-span-1">
             <Card className="shadow-lg">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-primary">
+                <CardTitle className="flex items-center gap-2 text-foreground">
                   <User className="h-5 w-5" />
-                  Suggested Questions
+                  Sugerowane pytania
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -221,7 +224,7 @@ const Index = () => {
 
         {/* Footer */}
         <div className="text-center mt-8 text-sm text-muted-foreground">
-          <p>Powered by Sopro AI Assistant • For more information, visit sopro.pl</p>
+          <p>Napędzane przez Asystenta AI Sopro • Więcej informacji na sopro.pl</p>
         </div>
       </div>
     </div>
