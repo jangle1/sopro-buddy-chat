@@ -11,6 +11,15 @@ export default defineConfig(({ mode, command }) => ({
     port: 8080,
   },
   base: command === 'build' ? '/sopro-buddy-chat/' : '/',
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+    rollupOptions: {
+      output: {
+        manualChunks: undefined,
+      },
+    },
+  },
   plugins: [
     react(),
     mode === 'development' &&
