@@ -12,7 +12,7 @@ export default defineConfig(({ mode, command }) => ({
   },
   base: command === 'build' ? '/sopro-buddy-chat/' : '/',
   build: {
-    outDir: 'dist',
+    outDir: 'docs', // changed from 'dist' to 'docs' for GitHub Pages
     assetsDir: 'assets',
     rollupOptions: {
       output: {
