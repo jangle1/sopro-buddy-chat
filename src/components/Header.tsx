@@ -10,11 +10,7 @@ const Header = () => {
       <div className="bg-primary h-12 flex items-center justify-between px-4">
         <div className="flex items-center gap-4">
           <div className="bg-white px-3 py-1 rounded">
-            <img 
-              src="/lovable-uploads/50a9333b-ccb9-4e40-bcc1-b31177569e46.png" 
-              alt="Sopro Logo" 
-              className="h-6"
-            />
+            <span className="text-primary font-bold text-lg">SOPRO</span>
           </div>
           <span className="text-white text-sm font-medium">Chemia budowlana</span>
         </div>
