@@ -102,3 +102,6 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
   }
 }
+
+.clip-bubble-tail-user { clip-path: polygon(100% 0, 0 100%, 100% 100%); }
+.clip-bubble-tail-assistant { clip-path: polygon(0 0, 100% 100%, 0 100%); }

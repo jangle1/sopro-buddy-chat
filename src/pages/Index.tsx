@@ -9,6 +9,8 @@ import ChatMessage from "@/components/ChatMessage";
 import SuggestionCard from "@/components/SuggestionCard";
 import Header from "@/components/Header";
 import { toast } from "sonner";
+import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogFooter, AlertDialogTitle, AlertDialogDescription, AlertDialogAction, AlertDialogCancel } from "@/components/ui/alert-dialog";
+import { soproThermConversation } from "@/demo/soproThermConversation";
 
 interface Message {
   id: string;
@@ -23,7 +25,8 @@ const suggestedQuestions = [
   "Jakie są różnice między produktami Sopro a konkurencją?",
   "Gdzie mogę kupić produkty Sopro?",
   "Jak szybko schnie zaprawa Sopro?",
-  "Jakie są zastosowania produktów Sopro w budownictwie?"
+  "Jakie są zastosowania produktów Sopro w budownictwie?",
+  "Systemy ociepleń Sopro" // Dodane demo
 ];
 
 const Index = () => {
@@ -32,6 +35,10 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [showReplaceDialog, setShowReplaceDialog] = useState(false);
+  const [pendingDemo, setPendingDemo] = useState(false);
+  const [demoMode, setDemoMode] = useState(false);
+  const [demoStep, setDemoStep] = useState(0);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -66,6 +73,38 @@ const Index = () => {
   const handleSendMessage = async (messageText: string = inputValue) => {
     if (!messageText.trim()) return;
 
+    if (demoMode) {
+      // Add user message
+      const userMessage: Message = {
+        id: Date.now().toString(),
+        text: messageText.trim(),
+        isUser: true,
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, userMessage]);
+      setInputValue("");
+      setIsLoading(true);
+      // Find next assistant message in demo
+      let nextIdx = demoStep + 1;
+      while (nextIdx < soproThermConversation.length && soproThermConversation[nextIdx].role !== "assistant") {
+        nextIdx++;
+      }
+      const nextDemoMsg = soproThermConversation[nextIdx];
+      setTimeout(() => {
+        if (nextDemoMsg && nextDemoMsg.role === "assistant") {
+          setMessages(prev => [...prev, {
+            id: (Date.now() + 1).toString(),
+            text: nextDemoMsg.content,
+            isUser: false,
+            timestamp: new Date()
+          }]);
+          setDemoStep(nextIdx);
+        }
+        setIsLoading(false);
+      }, 800);
+      return;
+    }
+
     const userMessage: Message = {
       id: Date.now().toString(),
       text: messageText.trim(),
@@ -96,6 +135,33 @@ const Index = () => {
   };
 
   const handleSuggestionClick = (question: string) => {
+    if (question === "Systemy ociepleń Sopro") {
+      if (messages.length > 0) {
+        setShowReplaceDialog(true);
+        setPendingDemo(true);
+      } else {
+        // Start demo mode with first user+assistant message
+        setDemoMode(true);
+        setDemoStep(1);
+        setMessages([
+          {
+            id: Date.now().toString(),
+            text: soproThermConversation[0].content,
+            isUser: true,
+            timestamp: new Date()
+          },
+          {
+            id: (Date.now() + 1).toString(),
+            text: soproThermConversation[1].content,
+            isUser: false,
+            timestamp: new Date()
+          }
+        ]);
+      }
+      return;
+    }
+    setDemoMode(false);
+    setDemoStep(0);
     handleSendMessage(question);
   };
 
@@ -238,6 +304,39 @@ const Index = () => {
           <p>Napędzane przez Asystenta AI Sopro • Więcej informacji na sopro.pl</p>
         </div>
       </div>
+      <AlertDialog open={showReplaceDialog} onOpenChange={setShowReplaceDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Czy zastąpić bieżącą rozmowę scenariuszem demo?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Obecna rozmowa zostanie usunięta i zastąpiona przykładowym scenariuszem "Systemy ociepleń Sopro".
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => { setShowReplaceDialog(false); setPendingDemo(false); }}>Anuluj</AlertDialogCancel>
+            <AlertDialogAction onClick={() => {
+              setDemoMode(true);
+              setDemoStep(1);
+              setMessages([
+                {
+                  id: Date.now().toString(),
+                  text: soproThermConversation[0].content,
+                  isUser: true,
+                  timestamp: new Date()
+                },
+                {
+                  id: (Date.now() + 1).toString(),
+                  text: soproThermConversation[1].content,
+                  isUser: false,
+                  timestamp: new Date()
+                }
+              ]);
+              setShowReplaceDialog(false);
+              setPendingDemo(false);
+            }}>Zastąp</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
