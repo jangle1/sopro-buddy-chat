@@ -34,19 +34,31 @@ const Index = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [showReplaceDialog, setShowReplaceDialog] = useState(false);
   const [pendingDemo, setPendingDemo] = useState(false);
   const [demoMode, setDemoMode] = useState(false);
   const [demoStep, setDemoStep] = useState(0);
+  const lastMessageRef = useRef<HTMLDivElement>(null);
+  const lastUserMessageRef = useRef<HTMLDivElement>(null);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  const scrollToLastMessage = () => {
+    lastMessageRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   useEffect(() => {
-    scrollToBottom();
+    scrollToLastMessage();
+  }, [messages]);
+
+  useEffect(() => {
+    // Sprawdzamy, czy ostatnia wiadomość to systemowa (nie użytkownika)
+    if (messages.length < 2) return;
+    const last = messages[messages.length - 1];
+    const prev = messages[messages.length - 2];
+    if (!last.isUser && prev.isUser) {
+      // Przewiń do czubka ostatniej wiadomości użytkownika
+      lastUserMessageRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
   }, [messages]);
 
   const simulateAIResponse = async (userMessage: string): Promise<string> => {
@@ -211,14 +223,21 @@ const Index = () => {
                           </div>
                         )}
                         
-                        {messages.map((message) => (
-                          <ChatMessage
-                            key={message.id}
-                            message={message.text}
-                            isUser={message.isUser}
-                            timestamp={new Date(message.timestamp)}
-                          />
-                        ))}
+                        {messages.map((message, idx) => {
+                          const isLastUser = message.isUser && (idx === messages.length - 1 || (messages[idx + 1] && !messages[idx + 1].isUser));
+                          return (
+                            <div
+                              key={message.id}
+                              ref={isLastUser ? lastUserMessageRef : undefined}
+                            >
+                              <ChatMessage
+                                message={message.text}
+                                isUser={message.isUser}
+                                timestamp={new Date(message.timestamp)}
+                              />
+                            </div>
+                          );
+                        })}
                         
                         {isLoading && (
                           <div className="flex justify-start">
@@ -235,7 +254,6 @@ const Index = () => {
                           </div>
                         )}
                         
-                        <div ref={messagesEndRef} />
                       </div>
                     </ScrollArea>
                   </div>

@@ -87,7 +87,7 @@ const ChatMessage = ({ message, isUser, timestamp }: ChatMessageProps) => {
         </div>
       )}
       <div className={cn(
-        "relative max-w-[80%] px-4 py-3 shadow-sm",
+        "relative max-w-[80%] px-4 py-3 shadow-sm max-w-[90vw] sm:max-w-[80%]",
         isUser
           ? "bg-primary text-primary-foreground ml-4 rounded-2xl rounded-br-sm"
           : "bg-muted text-muted-foreground mr-4 rounded-2xl rounded-bl-sm"
@@ -104,22 +104,26 @@ const ChatMessage = ({ message, isUser, timestamp }: ChatMessageProps) => {
         <div className="text-sm leading-relaxed whitespace-pre-line" dangerouslySetInnerHTML={{ __html: displayMessage }} />
         {tableHtml}
         {youtubeId && (
-          <div className="mt-3 rounded-lg overflow-hidden flex flex-col items-center gap-2">
-            <iframe
-              width="320"
-              height="180"
-              src={`https://www.youtube.com/embed/${youtubeId}`}
-              title="YouTube video"
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
+          <div className="mt-3 rounded-lg overflow-hidden flex flex-col items-center gap-2 w-full">
+            <div className="w-full" style={{ aspectRatio: '16/9' }}>
+              <iframe
+                width="100%"
+                height="100%"
+                style={{ width: '100%', height: '100%', minWidth: 0, border: 0, display: 'block' }}
+                src={`https://www.youtube.com/embed/${youtubeId}`}
+                title="YouTube video"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
             {pdfUrl && (
               <a
                 href={pdfUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-2 inline-block px-4 py-2 bg-primary text-white rounded shadow hover:bg-primary/80 transition"
+                className="mt-2 inline-block w-full text-center px-4 py-2 bg-primary text-white rounded shadow hover:bg-primary/80 transition"
+                style={{ wordBreak: 'break-all' }}
               >
                 LINK do dokumentacji
               </a>
@@ -127,12 +131,13 @@ const ChatMessage = ({ message, isUser, timestamp }: ChatMessageProps) => {
           </div>
         )}
         {!youtubeId && pdfUrl && (
-          <div className="mt-2">
+          <div className="mt-2 w-full">
             <a
               href={pdfUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block px-4 py-2 bg-primary text-white rounded shadow hover:bg-primary/80 transition"
+              className="inline-block w-full text-center px-4 py-2 bg-primary text-white rounded shadow hover:bg-primary/80 transition"
+              style={{ wordBreak: 'break-all' }}
             >
               LINK do dokumentacji
             </a>
