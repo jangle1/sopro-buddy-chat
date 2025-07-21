@@ -16,7 +16,7 @@ interface Message {
   id: string;
   text: string;
   isUser: boolean;
-  timestamp: Date;
+  timestamp: number;
   suggestions?: string[]; // Added suggestions property
 }
 
@@ -80,7 +80,7 @@ const Index = () => {
         id: Date.now().toString(),
         text: messageText.trim(),
         isUser: true,
-        timestamp: new Date()
+        timestamp: Date.now()
       };
       setMessages(prev => [...prev, userMessage]);
       setInputValue("");
@@ -105,7 +105,7 @@ const Index = () => {
       id: Date.now().toString(),
       text: messageText.trim(),
       isUser: true,
-      timestamp: new Date()
+      timestamp: Date.now()
     };
 
     setMessages(prev => [...prev, userMessage]);
@@ -119,7 +119,7 @@ const Index = () => {
         id: (Date.now() + 1).toString(),
         text: aiResponse,
         isUser: false,
-        timestamp: new Date()
+        timestamp: Date.now()
       };
 
       setMessages(prev => [...prev, aiMessage]);
@@ -216,7 +216,7 @@ const Index = () => {
                             key={message.id}
                             message={message.text}
                             isUser={message.isUser}
-                            timestamp={message.timestamp}
+                            timestamp={new Date(message.timestamp)}
                           />
                         ))}
                         
