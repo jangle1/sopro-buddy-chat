@@ -17,6 +17,7 @@ interface Message {
   text: string;
   isUser: boolean;
   timestamp: Date;
+  suggestions?: string[]; // Added suggestions property
 }
 
 const suggestedQuestions = [
@@ -86,18 +87,13 @@ const Index = () => {
       setIsLoading(true);
       // Find next assistant message in demo
       let nextIdx = demoStep + 1;
-      while (nextIdx < soproThermConversation.length && soproThermConversation[nextIdx].role !== "assistant") {
+      while (nextIdx < soproThermConversation.length && soproThermConversation[nextIdx].isUser) {
         nextIdx++;
       }
       const nextDemoMsg = soproThermConversation[nextIdx];
       setTimeout(() => {
-        if (nextDemoMsg && nextDemoMsg.role === "assistant") {
-          setMessages(prev => [...prev, {
-            id: (Date.now() + 1).toString(),
-            text: nextDemoMsg.content,
-            isUser: false,
-            timestamp: new Date()
-          }]);
+        if (nextDemoMsg && !nextDemoMsg.isUser) {
+          setMessages(prev => [...prev, { ...nextDemoMsg }]);
           setDemoStep(nextIdx);
         }
         setIsLoading(false);
@@ -144,18 +140,8 @@ const Index = () => {
         setDemoMode(true);
         setDemoStep(1);
         setMessages([
-          {
-            id: Date.now().toString(),
-            text: soproThermConversation[0].content,
-            isUser: true,
-            timestamp: new Date()
-          },
-          {
-            id: (Date.now() + 1).toString(),
-            text: soproThermConversation[1].content,
-            isUser: false,
-            timestamp: new Date()
-          }
+          { ...soproThermConversation[0] },
+          { ...soproThermConversation[1] }
         ]);
       }
       return;
@@ -171,6 +157,12 @@ const Index = () => {
       handleSendMessage();
     }
   };
+
+  // Szukamy ostatniej wiadomości bota z suggestions
+  const lastBotWithSuggestions = [...messages].reverse().find(m => !m.isUser && m.suggestions && m.suggestions.length > 0);
+  // Sprawdzamy, czy ostatnia wiadomość użytkownika to 'Nie, dziękuję. To wszystko.'
+  const lastUserMessage = [...messages].reverse().find(m => m.isUser);
+  const shouldShowSuggestions = lastBotWithSuggestions && !(lastUserMessage && lastUserMessage.text.trim() === 'Nie, dziękuję. To wszystko.');
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -247,7 +239,22 @@ const Index = () => {
                       </div>
                     </ScrollArea>
                   </div>
-                  
+                  {/* SUGGESTIONS KAFELKI NAD INPUTEM */}
+                  {shouldShowSuggestions && (
+                    <div className="flex flex-wrap gap-2 px-4 pb-2 pt-2">
+                      {lastBotWithSuggestions.suggestions!.map((s, i) => (
+                        <Button
+                          key={i}
+                          variant="outline"
+                          size="sm"
+                          className="rounded-full"
+                          onClick={() => handleSendMessage(s)}
+                        >
+                          {s}
+                        </Button>
+                      ))}
+                    </div>
+                  )}
                   {/* Input Area - fixed at bottom */}
                   <div className="border-t p-3 lg:p-4 flex-shrink-0">
                     <div className="flex gap-2">
@@ -318,18 +325,8 @@ const Index = () => {
               setDemoMode(true);
               setDemoStep(1);
               setMessages([
-                {
-                  id: Date.now().toString(),
-                  text: soproThermConversation[0].content,
-                  isUser: true,
-                  timestamp: new Date()
-                },
-                {
-                  id: (Date.now() + 1).toString(),
-                  text: soproThermConversation[1].content,
-                  isUser: false,
-                  timestamp: new Date()
-                }
+                { ...soproThermConversation[0] },
+                { ...soproThermConversation[1] }
               ]);
               setShowReplaceDialog(false);
               setPendingDemo(false);

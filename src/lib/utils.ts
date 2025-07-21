@@ -10,4 +10,5 @@ export interface Message {
   text: string;
   isUser: boolean;
   timestamp: Date;
+  suggestions?: string[]; // predefiniowane odpowiedzi do wyświetlenia po tej wiadomości
 }
