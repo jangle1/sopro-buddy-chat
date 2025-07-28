@@ -253,43 +253,34 @@ const Index = () => {
       <div className="flex-1 flex flex-col">
         {/* Mobile-first layout */}
         <div className="flex-1 flex flex-col lg:flex-row max-w-screen-2xl mx-auto w-full">
-          {/* DESKTOP: Przycisk do Drawer z zapisanymi rozmowami */}
+          {/* LEWY PANEL: Zapisane rozmowy (desktop) */}
           {!isMobile && (
-            <div className="hidden lg:flex flex-col items-start justify-start pt-8 pl-4">
-              <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
-                <DrawerTrigger asChild>
-                  <button
-                    className="bg-muted hover:bg-muted/70 rounded-full px-4 py-2 shadow transition flex items-center gap-2 text-primary font-medium"
-                    onClick={() => setDrawerOpen(true)}
-                    aria-label="Zapisane rozmowy"
-                  >
-                    <MessageCircle className="h-6 w-6" />
-                    <span className="hidden lg:inline text-base">Zapisane rozmowy</span>
-                  </button>
-                </DrawerTrigger>
-                <DrawerContent>
-                  <DrawerHeader>
-                    <DrawerTitle>Zapisane rozmowy</DrawerTitle>
-                  </DrawerHeader>
-                  <div className="px-4 pb-4 max-h-[60vh] overflow-y-auto">
-                    {savedChats.map((chat) => (
-                      <div
-                        key={chat.id}
-                        className="p-3 rounded-lg hover:bg-muted cursor-pointer transition flex flex-col gap-1"
-                        onClick={() => handleContinueChat(chat)}
-                      >
-                        <div className="font-medium text-sm text-foreground overflow-hidden whitespace-nowrap">
-                          <span className="inline-block" style={{ minWidth: '100%', maxWidth: '100%' }}>{chat.title}</span>
+            <div className="hidden lg:flex flex-col items-start justify-start pt-8 pl-4 lg:w-80">
+              <div className="w-full">
+                <div className="mb-4 text-lg font-semibold flex items-center gap-2">
+                  <MessageCircle className="h-5 w-5 text-primary" />
+                  Zapisane rozmowy
+                </div>
+                <div className="space-y-2">
+                  {savedChats.map((chat) => (
+                    <div
+                      key={chat.id}
+                      className="cursor-pointer hover:shadow-md transition-all duration-200 hover:border-primary/50 group border rounded-lg p-4 bg-card"
+                      onClick={() => handleContinueChat(chat)}
+                    >
+                      <div className="flex flex-col gap-1">
+                        <div className="font-medium text-sm text-foreground group-hover:text-primary transition-colors">
+                          {chat.title}
                         </div>
-                        <div className="text-xs text-muted-foreground overflow-hidden whitespace-nowrap">
-                          <span className="inline-block" style={{ minWidth: '100%', maxWidth: '100%' }}>{chat.lastMessage}</span>
+                        <div className="text-xs text-muted-foreground truncate">
+                          {chat.lastMessage}
                         </div>
                         <div className="text-[10px] text-muted-foreground mt-1">{chat.date.toLocaleDateString()} {chat.date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
                       </div>
-                    ))}
-                  </div>
-                </DrawerContent>
-              </Drawer>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           )}
           {/* Chat Interface - Full width on mobile, szeroki na desktopie */}
@@ -357,13 +348,25 @@ const Index = () => {
                     <ScrollArea className="h-full">
                       <div className="p-3 lg:p-4 space-y-3 lg:space-y-4">
                         {messages.length === 0 && (
-                          <div className="flex flex-col items-center justify-center h-32 lg:h-48 text-center">
-                            <Sparkles className="h-8 w-8 lg:h-12 lg:w-12 text-primary mb-2 lg:mb-4" />
-                            <h3 className="text-base lg:text-lg font-semibold mb-1 lg:mb-2">Witaj w Asystenice Sopro!</h3>
-                            <p className="text-sm lg:text-base text-muted-foreground px-4">
-                              Zacznij od zadania pytania lub wybierz jedną z propozycji.
-                            </p>
-                          </div>
+                          <>
+                            {/* SUGEROWANE PYTANIA - tylko na desktopie nad powitaniem */}
+                            <div className="hidden lg:flex flex-wrap justify-center gap-2 mb-4">
+                              {suggestedQuestions.map((question, index) => (
+                                <SuggestionCard
+                                  key={index}
+                                  question={question}
+                                  onClick={handleSuggestionClick}
+                                />
+                              ))}
+                            </div>
+                            <div className="flex flex-col items-center justify-center h-32 lg:h-48 text-center">
+                              <Sparkles className="h-8 w-8 lg:h-12 lg:w-12 text-primary mb-2 lg:mb-4" />
+                              <h3 className="text-base lg:text-lg font-semibold mb-1 lg:mb-2">Witaj w Asystenice Sopro!</h3>
+                              <p className="text-sm lg:text-base text-muted-foreground px-4">
+                                Zacznij od zadania pytania lub wybierz jedną z propozycji.
+                              </p>
+                            </div>
+                          </>
                         )}
                         
                         {isLoadingChat ? (
@@ -454,28 +457,31 @@ const Index = () => {
           </div>
 
           {/* Suggestions Panel - Below chat on mobile, side on desktop */}
-          <div className="lg:flex-1 lg:max-w-sm">
-            <div className="mx-4 lg:mx-0 lg:mr-8 mb-4 lg:mb-8 lg:mt-24">
-              <Card className="shadow-lg">
-                <CardHeader className="pb-3 lg:pb-6">
-                  <CardTitle className="flex items-center gap-2 text-foreground text-base lg:text-lg">
-                    <User className="h-4 w-4 lg:h-5 lg:w-5" />
-                    Sugerowane pytania
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2 lg:space-y-3">
-                  {suggestedQuestions.map((question, index) => (
-                    <SuggestionCard
-                      key={index}
-                      question={question}
-                      onClick={handleSuggestionClick}
-                    />
-                  ))}
-                </CardContent>
-              </Card>
-            </div>
-          </div>
+          {/* USUŃ panel sugerowanych pytań z prawej strony (cały <div className="lg:flex-1 lg:max-w-sm">...</div>) */}
         </div>
+
+        {/* MOBILE: Sugerowane pytania pod chatboxem */}
+        {isMobile && messages.length === 0 && (
+          <div className="mx-4 mb-4">
+            <Card className="shadow-lg">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-foreground text-base">
+                  <User className="h-4 w-4" />
+                  Sugerowane pytania
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {suggestedQuestions.map((question, index) => (
+                  <SuggestionCard
+                    key={index}
+                    question={question}
+                    onClick={handleSuggestionClick}
+                  />
+                ))}
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         {/* Footer */}
         <div className="text-center py-4 text-xs lg:text-sm text-muted-foreground bg-muted/30">
