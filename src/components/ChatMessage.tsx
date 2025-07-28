@@ -1,6 +1,7 @@
 
 import { cn } from "@/lib/utils";
-import { Bot, User as UserIcon } from "lucide-react";
+import { Bot, User as UserIcon, ThumbsUp, ThumbsDown } from "lucide-react";
+import { useState } from "react";
 
 interface ChatMessageProps {
   message: string;
@@ -45,6 +46,8 @@ function renderTable(tableText: string) {
 }
 
 const ChatMessage = ({ message, isUser, timestamp }: ChatMessageProps) => {
+  const [feedback, setFeedback] = useState<null | 'up' | 'down'>(null);
+
   // Find YouTube link
   const ytMatch = message.match(YOUTUBE_REGEX);
   let youtubeId = null;
@@ -103,6 +106,38 @@ const ChatMessage = ({ message, isUser, timestamp }: ChatMessageProps) => {
         />
         <div className="text-sm leading-relaxed whitespace-pre-line" dangerouslySetInnerHTML={{ __html: displayMessage }} />
         {tableHtml}
+        {/* Feedback thumbs for assistant messages */}
+        {!isUser && (
+          <div className="flex gap-2 mt-2 items-center">
+            <button
+              className={cn(
+                "p-1 rounded-full border transition",
+                feedback === 'up' ? 'bg-primary/20 border-primary text-primary' : 'hover:bg-muted',
+                feedback !== null && 'opacity-60'
+              )}
+              onClick={() => setFeedback('up')}
+              disabled={feedback !== null}
+              aria-label="Odpowiedź była pomocna"
+            >
+              <ThumbsUp className="w-4 h-4" />
+            </button>
+            <button
+              className={cn(
+                "p-1 rounded-full border transition",
+                feedback === 'down' ? 'bg-destructive/20 border-destructive text-destructive' : 'hover:bg-muted',
+                feedback !== null && 'opacity-60'
+              )}
+              onClick={() => setFeedback('down')}
+              disabled={feedback !== null}
+              aria-label="Odpowiedź nie była pomocna"
+            >
+              <ThumbsDown className="w-4 h-4" />
+            </button>
+            {feedback && (
+              <span className="text-xs text-muted-foreground ml-1">Dziękujemy za opinię!</span>
+            )}
+          </div>
+        )}
         {youtubeId && (
           <div className="mt-3 rounded-lg overflow-hidden flex flex-col items-center gap-2 w-full">
             <div className="w-full" style={{ aspectRatio: '16/9' }}>

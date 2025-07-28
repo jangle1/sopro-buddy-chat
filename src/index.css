@@ -105,3 +105,18 @@ All colors MUST be HSL.
 
 .clip-bubble-tail-user { clip-path: polygon(100% 0, 0 100%, 100% 100%); }
 .clip-bubble-tail-assistant { clip-path: polygon(0 0, 100% 100%, 0 100%); }
+
+@keyframes marquee {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+.animate-marquee {
+  display: inline-block;
+  white-space: nowrap;
+  animation: marquee 8s linear infinite;
+}
+
+.pause-marquee {
+  animation-play-state: paused !important;
+}

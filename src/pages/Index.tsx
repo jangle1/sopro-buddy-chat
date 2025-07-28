@@ -11,6 +11,8 @@ import Header from "@/components/Header";
 import { toast } from "sonner";
 import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogFooter, AlertDialogTitle, AlertDialogDescription, AlertDialogAction, AlertDialogCancel } from "@/components/ui/alert-dialog";
 import { soproThermConversation } from "@/demo/soproThermConversation";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 
 interface Message {
   id: string;
@@ -30,6 +32,60 @@ const suggestedQuestions = [
   "Systemy ociepleń Sopro" // Dodane demo
 ];
 
+// Dummy zapisane rozmowy
+const savedChats = [
+  {
+    id: "c1",
+    title: "Hydroizolacja łazienki w domu jednorodzinnym",
+    lastMessage: "Sopro oferuje systemy hydroizolacji do łazienek, np. DSF 523.",
+    date: new Date(Date.now() - 1000 * 60 * 60 * 2),
+    history: [
+      { id: "1", text: "Jaką hydroizolację polecacie do łazienki?", isUser: true, timestamp: Date.now() - 1000 * 60 * 60 * 2 },
+      { id: "2", text: "Sopro oferuje systemy hydroizolacji do łazienek, np. DSF 523.", isUser: false, timestamp: Date.now() - 1000 * 60 * 60 * 2 + 1000 },
+    ],
+  },
+  {
+    id: "c2",
+    title: "Klej do płytek na ogrzewanie podłogowe",
+    lastMessage: "Polecamy Sopro FKM 444 – elastyczny klej do podłóg z ogrzewaniem.",
+    date: new Date(Date.now() - 1000 * 60 * 60 * 5),
+    history: [
+      { id: "1", text: "Jaki klej do płytek na ogrzewanie podłogowe?", isUser: true, timestamp: Date.now() - 1000 * 60 * 60 * 5 },
+      { id: "2", text: "Polecamy Sopro FKM 444 – elastyczny klej do podłóg z ogrzewaniem.", isUser: false, timestamp: Date.now() - 1000 * 60 * 60 * 5 + 1000 },
+    ],
+  },
+  {
+    id: "c3",
+    title: "Różnice Sopro vs konkurencja",
+    lastMessage: "Produkty Sopro wyróżniają się innowacyjną formułą i wsparciem technicznym.",
+    date: new Date(Date.now() - 1000 * 60 * 60 * 24),
+    history: [
+      { id: "1", text: "Czym Sopro różni się od konkurencji?", isUser: true, timestamp: Date.now() - 1000 * 60 * 60 * 24 },
+      { id: "2", text: "Produkty Sopro wyróżniają się innowacyjną formułą i wsparciem technicznym.", isUser: false, timestamp: Date.now() - 1000 * 60 * 60 * 24 + 1000 },
+    ],
+  },
+  {
+    id: "c4",
+    title: "Gdzie kupić Sopro Rapidur B5?",
+    lastMessage: "Produkt dostępny w sieci PSB Mrówka i Leroy Merlin.",
+    date: new Date(Date.now() - 1000 * 60 * 60 * 48),
+    history: [
+      { id: "1", text: "Gdzie kupię Sopro Rapidur B5?", isUser: true, timestamp: Date.now() - 1000 * 60 * 60 * 48 },
+      { id: "2", text: "Produkt dostępny w sieci PSB Mrówka i Leroy Merlin.", isUser: false, timestamp: Date.now() - 1000 * 60 * 60 * 48 + 1000 },
+    ],
+  },
+  {
+    id: "c5",
+    title: "System ociepleń SoproTherm Easy",
+    lastMessage: "SoproTherm Easy to lekki system na styropian EPS do 30 cm.",
+    date: new Date(Date.now() - 1000 * 60 * 60 * 72),
+    history: [
+      { id: "1", text: "Co to jest SoproTherm Easy?", isUser: true, timestamp: Date.now() - 1000 * 60 * 60 * 72 },
+      { id: "2", text: "SoproTherm Easy to lekki system na styropian EPS do 30 cm.", isUser: false, timestamp: Date.now() - 1000 * 60 * 60 * 72 + 1000 },
+    ],
+  },
+];
+
 const Index = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
@@ -41,6 +97,9 @@ const Index = () => {
   const [demoStep, setDemoStep] = useState(0);
   const lastMessageRef = useRef<HTMLDivElement>(null);
   const lastUserMessageRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [isLoadingChat, setIsLoadingChat] = useState(false);
 
   const scrollToLastMessage = () => {
     lastMessageRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -170,6 +229,17 @@ const Index = () => {
     }
   };
 
+  const handleContinueChat = (chat: typeof savedChats[0]) => {
+    setIsLoadingChat(true);
+    setDrawerOpen(false);
+    setTimeout(() => {
+      setMessages(chat.history && chat.history.length > 0 ? chat.history : [
+        { id: Date.now().toString(), text: 'Witaj! To przykładowa rozmowa.', isUser: false, timestamp: Date.now() }
+      ]);
+      setIsLoadingChat(false);
+    }, 900);
+  };
+
   // Szukamy ostatniej wiadomości bota z suggestions
   const lastBotWithSuggestions = [...messages].reverse().find(m => !m.isUser && m.suggestions && m.suggestions.length > 0);
   // Sprawdzamy, czy ostatnia wiadomość użytkownika to 'Nie, dziękuję. To wszystko.'
@@ -182,9 +252,82 @@ const Index = () => {
       
       <div className="flex-1 flex flex-col">
         {/* Mobile-first layout */}
-        <div className="flex-1 flex flex-col lg:flex-row max-w-7xl mx-auto w-full">
-          {/* Chat Interface - Full width on mobile, 2/3 on desktop */}
-          <div className="flex-1 lg:flex-[2] flex flex-col min-h-0">
+        <div className="flex-1 flex flex-col lg:flex-row max-w-screen-2xl mx-auto w-full">
+          {/* DESKTOP: Przycisk do Drawer z zapisanymi rozmowami */}
+          {!isMobile && (
+            <div className="hidden lg:flex flex-col items-start justify-start pt-8 pl-4">
+              <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
+                <DrawerTrigger asChild>
+                  <button
+                    className="bg-muted hover:bg-muted/70 rounded-full px-4 py-2 shadow transition flex items-center gap-2 text-primary font-medium"
+                    onClick={() => setDrawerOpen(true)}
+                    aria-label="Zapisane rozmowy"
+                  >
+                    <MessageCircle className="h-6 w-6" />
+                    <span className="hidden lg:inline text-base">Zapisane rozmowy</span>
+                  </button>
+                </DrawerTrigger>
+                <DrawerContent>
+                  <DrawerHeader>
+                    <DrawerTitle>Zapisane rozmowy</DrawerTitle>
+                  </DrawerHeader>
+                  <div className="px-4 pb-4 max-h-[60vh] overflow-y-auto">
+                    {savedChats.map((chat) => (
+                      <div
+                        key={chat.id}
+                        className="p-3 rounded-lg hover:bg-muted cursor-pointer transition flex flex-col gap-1"
+                        onClick={() => handleContinueChat(chat)}
+                      >
+                        <div className="font-medium text-sm text-foreground overflow-hidden whitespace-nowrap">
+                          <span className="inline-block" style={{ minWidth: '100%', maxWidth: '100%' }}>{chat.title}</span>
+                        </div>
+                        <div className="text-xs text-muted-foreground overflow-hidden whitespace-nowrap">
+                          <span className="inline-block" style={{ minWidth: '100%', maxWidth: '100%' }}>{chat.lastMessage}</span>
+                        </div>
+                        <div className="text-[10px] text-muted-foreground mt-1">{chat.date.toLocaleDateString()} {chat.date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                      </div>
+                    ))}
+                  </div>
+                </DrawerContent>
+              </Drawer>
+            </div>
+          )}
+          {/* Chat Interface - Full width on mobile, szeroki na desktopie */}
+          <div className="flex-1 flex flex-col min-h-0 min-w-0" style={{ maxWidth: '100%' }}>
+            {/* MOBILE: Przycisk do zapisanych rozmów nad inputem */}
+            {isMobile && (
+              <div className="px-4 pt-2 pb-1 flex justify-between items-center">
+                <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
+                  <DrawerTrigger asChild>
+                    <Button variant="outline" size="sm" className="rounded-full w-full" onClick={() => setDrawerOpen(true)}>
+                      <MessageCircle className="h-4 w-4 mr-2" /> Zapisane rozmowy
+                    </Button>
+                  </DrawerTrigger>
+                  <DrawerContent>
+                    <DrawerHeader>
+                      <DrawerTitle>Zapisane rozmowy</DrawerTitle>
+                    </DrawerHeader>
+                    <div className="px-4 pb-4">
+                      {savedChats.map((chat) => (
+                        <div
+                          key={chat.id}
+                          className="p-3 rounded-lg hover:bg-muted cursor-pointer transition flex flex-col gap-1"
+                          onClick={() => handleContinueChat(chat)}
+                        >
+                          <div className="font-medium text-sm text-foreground overflow-hidden whitespace-nowrap">
+                            <span className="inline-block" style={{ minWidth: '100%', maxWidth: '100%' }}>{chat.title}</span>
+                          </div>
+                          <div className="text-xs text-muted-foreground overflow-hidden whitespace-nowrap">
+                            <span className="inline-block" style={{ minWidth: '100%', maxWidth: '100%' }}>{chat.lastMessage}</span>
+                          </div>
+                          <div className="text-[10px] text-muted-foreground mt-1">{chat.date.toLocaleDateString()} {chat.date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </DrawerContent>
+                </Drawer>
+              </div>
+            )}
             {/* Header section - smaller on mobile */}
             <div className="text-center p-4 lg:p-8">
               <div className="flex items-center justify-center gap-2 lg:gap-3 mb-2 lg:mb-4">
@@ -223,21 +366,31 @@ const Index = () => {
                           </div>
                         )}
                         
-                        {messages.map((message, idx) => {
-                          const isLastUser = message.isUser && (idx === messages.length - 1 || (messages[idx + 1] && !messages[idx + 1].isUser));
-                          return (
-                            <div
-                              key={message.id}
-                              ref={isLastUser ? lastUserMessageRef : undefined}
-                            >
-                              <ChatMessage
-                                message={message.text}
-                                isUser={message.isUser}
-                                timestamp={new Date(message.timestamp)}
-                              />
-                            </div>
-                          );
-                        })}
+                        {isLoadingChat ? (
+                          <div className="space-y-3">
+                            {[...Array(3)].map((_, i) => (
+                              <div key={i} className="flex gap-2 items-end">
+                                <div className="bg-muted rounded-lg w-2/3 h-8 animate-pulse" />
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          messages.map((message, idx) => {
+                            const isLastUser = message.isUser && (idx === messages.length - 1 || (messages[idx + 1] && !messages[idx + 1].isUser));
+                            return (
+                              <div
+                                key={message.id}
+                                ref={isLastUser ? lastUserMessageRef : undefined}
+                              >
+                                <ChatMessage
+                                  message={message.text}
+                                  isUser={message.isUser}
+                                  timestamp={new Date(message.timestamp)}
+                                />
+                              </div>
+                            );
+                          })
+                        )}
                         
                         {isLoading && (
                           <div className="flex justify-start">
