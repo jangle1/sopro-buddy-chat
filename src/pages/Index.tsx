@@ -347,26 +347,25 @@ const Index = () => {
                   <div className="flex-1 min-h-0">
                     <ScrollArea className="h-full">
                       <div className="p-3 lg:p-4 space-y-3 lg:space-y-4">
+                        {/* SUGEROWANE PYTANIA - zawsze na desktopie nad powitaniem */}
+                        <div className="hidden lg:flex flex-wrap justify-center gap-2 mb-4">
+                          {suggestedQuestions.map((question, index) => (
+                            <SuggestionCard
+                              key={index}
+                              question={question}
+                              onClick={handleSuggestionClick}
+                            />
+                          ))}
+                        </div>
+                        
                         {messages.length === 0 && (
-                          <>
-                            {/* SUGEROWANE PYTANIA - tylko na desktopie nad powitaniem */}
-                            <div className="hidden lg:flex flex-wrap justify-center gap-2 mb-4">
-                              {suggestedQuestions.map((question, index) => (
-                                <SuggestionCard
-                                  key={index}
-                                  question={question}
-                                  onClick={handleSuggestionClick}
-                                />
-                              ))}
-                            </div>
-                            <div className="flex flex-col items-center justify-center h-32 lg:h-48 text-center">
-                              <Sparkles className="h-8 w-8 lg:h-12 lg:w-12 text-primary mb-2 lg:mb-4" />
-                              <h3 className="text-base lg:text-lg font-semibold mb-1 lg:mb-2">Witaj w Asystenice Sopro!</h3>
-                              <p className="text-sm lg:text-base text-muted-foreground px-4">
-                                Zacznij od zadania pytania lub wybierz jedną z propozycji.
-                              </p>
-                            </div>
-                          </>
+                          <div className="flex flex-col items-center justify-center h-32 lg:h-48 text-center">
+                            <Sparkles className="h-8 w-8 lg:h-12 lg:w-12 text-primary mb-2 lg:mb-4" />
+                            <h3 className="text-base lg:text-lg font-semibold mb-1 lg:mb-2">Witaj w Asystenice Sopro!</h3>
+                            <p className="text-sm lg:text-base text-muted-foreground px-4">
+                              Zacznij od zadania pytania lub wybierz jedną z propozycji.
+                            </p>
+                          </div>
                         )}
                         
                         {isLoadingChat ? (
