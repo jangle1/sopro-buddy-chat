@@ -429,6 +429,21 @@ const Index = () => {
                     </div>
                   )}
                   {/* Input Area - fixed at bottom */}
+                  {isMobile && messages.length === 0 && (
+                    <div className="w-full overflow-x-auto flex flex-nowrap gap-2 px-4 pb-2 pt-2" style={{ WebkitOverflowScrolling: 'touch' }}>
+                      {suggestedQuestions.map((question, index) => (
+                        <Button
+                          key={index}
+                          variant="outline"
+                          size="sm"
+                          className="rounded-full whitespace-nowrap flex-shrink-0"
+                          onClick={() => handleSuggestionClick(question)}
+                        >
+                          {question}
+                        </Button>
+                      ))}
+                    </div>
+                  )}
                   <div className="border-t p-3 lg:p-4 flex-shrink-0">
                     <div className="flex gap-2">
                       <Input
@@ -458,29 +473,6 @@ const Index = () => {
           {/* Suggestions Panel - Below chat on mobile, side on desktop */}
           {/* USUŃ panel sugerowanych pytań z prawej strony (cały <div className="lg:flex-1 lg:max-w-sm">...</div>) */}
         </div>
-
-        {/* MOBILE: Sugerowane pytania pod chatboxem */}
-        {isMobile && messages.length === 0 && (
-          <div className="mx-4 mb-4">
-            <Card className="shadow-lg">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-foreground text-base">
-                  <User className="h-4 w-4" />
-                  Sugerowane pytania
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {suggestedQuestions.map((question, index) => (
-                  <SuggestionCard
-                    key={index}
-                    question={question}
-                    onClick={handleSuggestionClick}
-                  />
-                ))}
-              </CardContent>
-            </Card>
-          </div>
-        )}
 
         {/* Footer */}
         <div className="text-center py-4 text-xs lg:text-sm text-muted-foreground bg-muted/30">
